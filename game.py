@@ -2,6 +2,7 @@ import pygame
 from datetime import datetime
 from airplane import Airplane
 from bullet import Bullet
+from heart import Heart
 
 class Game:
     def __init__(self):
@@ -25,6 +26,13 @@ class Game:
         self.bullets = [[], []]
         self.bullet_spawn_rate = 10
         self.spawn_index = 0
+        heart_p1 = []
+        heart_p2 = []
+        for i in range(5):
+            heart_p1.append(Heart(self.screen, self.size, "./heart.png", 0, 0, 40*i))
+            heart_p2.append(Heart(self.screen, self.size, "./heart.png", 0, 1, 840 + 40*(i-1)))
+        self.hearts = [heart_p1, heart_p2]
+        self.heart_index = [4, 4]
         self.delta_time = 0
         self.run_game()
 
@@ -75,6 +83,8 @@ class Game:
                 self.bullets[1].append(bullet)
     
         delete_bullet_list = []
+        delete_heart_list = []
+        
         for i in range(len(self.bullets[0])):
             self.bullets[0][i].update_position()
             if self.bullets[0][i].off_screen():
@@ -91,6 +101,11 @@ class Game:
                 delete_bullet_list.append(self.bullets[1][i])
                 self.airplanes[0].image.set_alpha(128)
                 self.score[0] += 1
+                if self.heart_index[0] >= 0:
+                    delete_heart_list.append(self.hearts[0][self.heart_index[0]])
+                self.heart_index[0] -= 1
+                if self.heart_index[0] == -1:
+                    self.game_over("PLAYER 1")
             
         for i in range(len(self.bullets[0])):
             a = self.bullets[0][i]
@@ -98,6 +113,11 @@ class Game:
                 delete_bullet_list.append(self.bullets[0][i]) 
                 self.airplanes[1].image.set_alpha(128)
                 self.score[1] += 1
+                if self.heart_index[1] >= 0:
+                    delete_heart_list.append(self.hearts[1][self.heart_index[1]])
+                self.heart_index[1] -= 1
+                if self.heart_index[1] == -1:
+                    self.game_over("PLAYER 2")
             
         delete_bullet_list.reverse()
     
@@ -105,7 +125,13 @@ class Game:
             if d in self.bullets[0]:
                 self.bullets[0].remove(d)
             elif d in self.bullets[1]:
-                self.bullets[1].remove(d)      
+                self.bullets[1].remove(d)   
+                
+        for d in delete_heart_list:
+            if d in self.hearts[0]:
+                self.hearts[0].remove(d)
+            elif d in self.hearts[1]:
+                self.hearts[1].remove(d)   
              
         self.spawn_index += 1
         self.airplanes[0].image.set_alpha(255)
@@ -132,5 +158,28 @@ class Game:
     
         text_time = font.render("TIME : {0}".format(self.delta_time), True, self.colors['WHITE'])
         self.screen.blit(text_time, (430, 5))
+        
+        for heart in self.hearts[0]:
+            heart.show()
+            
+        for heart in self.hearts[1]:
+            heart.show()
 
         pygame.display.flip()
+        
+    def game_over(self, winner):
+        SB = 0
+        while SB == 0:
+            self.clock.tick(60)
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        SB = 1
+            self.screen.fill(self.colors['BLACK'])
+            font = pygame.font.Font(None, 65)
+            result_text = font.render("Winner : {0}".format(winner), True, self.colors['WHITE'])
+            exit_prompt = font.render("PRESS SPACE KEY TO EXIT THE GAME", True, self.colors['WHITE'])
+            self.screen.blit(result_text, (70, round(self.size[1]/2-50)))    
+            self.screen.blit(exit_prompt, (70, round(self.size[1]/2-50) - 70))    
+            pygame.display.flip()
+        pygame.quit()
