@@ -20,8 +20,8 @@ class Game:
         }
         self.start_time = datetime.now()
         self.score = [0, 0]
-        player_one = Airplane(self.screen, self.size, "./airplane.png", 270, 0)
-        player_two = Airplane(self.screen, self.size, "./airplane.png", 90, 1)
+        player_one = Airplane(self.screen, self.size, "./airplane.png", 270, 0) # left_player
+        player_two = Airplane(self.screen, self.size, "./airplane.png", 90, 1) # right_player
         self.airplanes = [player_one, player_two]
         self.bullets = [[], []]
         self.bullet_spawn_rate = 10
