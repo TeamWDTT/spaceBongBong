@@ -6,6 +6,7 @@ from bullet import Bullet
 from heart import Heart
 from item import Item
 
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -33,9 +34,7 @@ class Game:
             heart_p2.append(Heart(self.screen, self.size, "./heart.png", 0, 1, 840 + 40*(i-1)))
         self.hearts = [heart_p1, heart_p2]
         self.heart_index = [4, 4]
-        
         self.spawn_index = 0
-        
         self.delta_time = 0
         self.items = [Item(self.screen, self.size, ["./item_speed.png", "./item_bullet.png"], i % 2)]
         self.item_respawn_rate = 500
@@ -78,6 +77,7 @@ class Game:
         self.airplanes[0].update_position()
         self.airplanes[1].update_position()
     
+
         if self.airplanes[0].shooting: # 총알 생성 - 1P
             if self.spawn_index % self.airplanes[0].bullet_spawn_rate == 0:
                 bullet = Bullet(self.screen, self.size, "./bullet.png", 270, self.airplanes[0])
@@ -85,13 +85,15 @@ class Game:
     
         if self.airplanes[1].shooting: # 총알 생성 - 2P
             if self.spawn_index % self.airplanes[1].bullet_spawn_rate == 0:
+
                 bullet = Bullet(self.screen, self.size, "./bullet.png", 90, self.airplanes[1])
                 self.bullets[1].append(bullet)
     
         delete_bullet_list = []
         delete_heart_list = []
-        
+
         for i in range(len(self.bullets[0])): # 총알이 벽에 맞았을 때 - 1P
+
             self.bullets[0][i].update_position()
             if self.bullets[0][i].off_screen():
                 delete_bullet_list.append(self.bullets[0][i])
@@ -125,6 +127,7 @@ class Game:
                 if self.heart_index[0] == -1:
                     self.game_over("PLAYER 1")
             
+
         for i in range(len(self.bullets[0])):  # 아이템 적중 시 파괴 - 1P
             for item in self.items:
                 if item.crash(self.bullets[0][i]):
@@ -182,10 +185,10 @@ class Game:
         
         for bullet in self.bullets[1]:
             bullet.show()
-        
+
         for item in self.items:
             item.show()
-        
+
         font = pygame.font.Font(None, 40)
         score_p1 = font.render("SCORE : {0}".format(self.score[0]), True, self.colors['YELLOW'])
         self.screen.blit(score_p1, (820, 0))

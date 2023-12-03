@@ -32,3 +32,4 @@ class Entity:
             and self.y < other.y + other.sy
             and self.y + self.sy > other.y
         )
+
