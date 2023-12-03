@@ -1,8 +1,11 @@
+import random
 import pygame
 from datetime import datetime
 from airplane import Airplane
 from bullet import Bullet
 from heart import Heart
+from item import Item
+
 
 class Game:
     def __init__(self):
@@ -24,8 +27,6 @@ class Game:
         player_two = Airplane(self.screen, self.size, "./airplane.png", 90, 1) # right_player
         self.airplanes = [player_one, player_two]
         self.bullets = [[], []]
-        self.bullet_spawn_rate = 10
-        self.spawn_index = 0
         heart_p1 = []
         heart_p2 = []
         for i in range(5):
@@ -33,7 +34,11 @@ class Game:
             heart_p2.append(Heart(self.screen, self.size, "./heart.png", 0, 1, 840 + 40*(i-1)))
         self.hearts = [heart_p1, heart_p2]
         self.heart_index = [4, 4]
+        self.spawn_index = 0
         self.delta_time = 0
+        self.items = [Item(self.screen, self.size, ["./item_speed.png", "./item_bullet.png"], i % 2)]
+        self.item_respawn_rate = 500
+        self.item_respawn_index = 0
         self.run_game()
 
     def run_game(self):
@@ -72,30 +77,45 @@ class Game:
         self.airplanes[0].update_position()
         self.airplanes[1].update_position()
     
-        if self.airplanes[0].shooting:
-            if self.spawn_index % self.bullet_spawn_rate == 0:
+
+        if self.airplanes[0].shooting: # 총알 생성 - 1P
+            if self.spawn_index % self.airplanes[0].bullet_spawn_rate == 0:
                 bullet = Bullet(self.screen, self.size, "./bullet.png", 270, self.airplanes[0])
                 self.bullets[0].append(bullet)
     
-        if self.airplanes[1].shooting:
-            if self.spawn_index % self.bullet_spawn_rate == 0:
+        if self.airplanes[1].shooting: # 총알 생성 - 2P
+            if self.spawn_index % self.airplanes[1].bullet_spawn_rate == 0:
+
                 bullet = Bullet(self.screen, self.size, "./bullet.png", 90, self.airplanes[1])
                 self.bullets[1].append(bullet)
     
         delete_bullet_list = []
         delete_heart_list = []
-        
-        for i in range(len(self.bullets[0])):
+
+        for i in range(len(self.bullets[0])): # 총알이 벽에 맞았을 때 - 1P
+
             self.bullets[0][i].update_position()
             if self.bullets[0][i].off_screen():
                 delete_bullet_list.append(self.bullets[0][i])
             
-        for i in range(len(self.bullets[1])):
+        for i in range(len(self.bullets[1])): # 총알이 벽에 맞았을 때 - 2P
             self.bullets[1][i].update_position()
             if self.bullets[1][i].off_screen():
                 delete_bullet_list.append(self.bullets[1][i])
         
-        for i in range(len(self.bullets[1])):
+        for i in range(len(self.bullets[0])): # 1P 총알이 2P 비행기에 맞았을 때
+            a = self.bullets[0][i]
+            if self.airplanes[1].crash(a):
+                delete_bullet_list.append(self.bullets[0][i]) 
+                self.airplanes[1].image.set_alpha(128)
+                self.score[1] += 1
+                if self.heart_index[1] >= 0:
+                    delete_heart_list.append(self.hearts[1][self.heart_index[1]])
+                self.heart_index[1] -= 1
+                if self.heart_index[1] == -1:
+                    self.game_over("PLAYER 2")
+
+        for i in range(len(self.bullets[1])): # 2P 총알이 1P 비행기에 맞았을 때
             a = self.bullets[1][i]
             if self.airplanes[0].crash(a):
                 delete_bullet_list.append(self.bullets[1][i])
@@ -107,18 +127,30 @@ class Game:
                 if self.heart_index[0] == -1:
                     self.game_over("PLAYER 1")
             
+
+        for i in range(len(self.bullets[0])):  # 아이템 적중 시 파괴 - 1P
+            for item in self.items:
+                if item.crash(self.bullets[0][i]):
+                    item.apply_buff(self.airplanes[0])
+                    self.items.remove(item)
+
+        for i in range(len(self.bullets[1])): # 아이템 적중 시 파괴 - 2P
+            for item in self.items:
+                if item.crash(self.bullets[1][i]):
+                    item.apply_buff(self.airplanes[1])
+                    self.items.remove(item) 
+
         for i in range(len(self.bullets[0])):
-            a = self.bullets[0][i]
-            if self.airplanes[1].crash(a):
-                delete_bullet_list.append(self.bullets[0][i]) 
-                self.airplanes[1].image.set_alpha(128)
-                self.score[1] += 1
-                if self.heart_index[1] >= 0:
-                    delete_heart_list.append(self.hearts[1][self.heart_index[1]])
-                self.heart_index[1] -= 1
-                if self.heart_index[1] == -1:
-                    self.game_over("PLAYER 2")
-            
+            for item in self.items:
+                if item.crash(self.bullets[0][i]):
+                    delete_bullet_list.append(self.bullets[0][i])
+                    item.apply_buff(self.airplanes[0])
+
+        for i in range(len(self.bullets[1])):
+            for item in self.items:
+                if item.crash(self.bullets[1][i]):
+                    item.apply_buff(self.airplanes[1])
+
         delete_bullet_list.reverse()
     
         for d in delete_bullet_list:
@@ -133,9 +165,14 @@ class Game:
             elif d in self.hearts[1]:
                 self.hearts[1].remove(d)   
              
-        self.spawn_index += 1
+        if self.item_respawn_index % self.item_respawn_rate == 0 and len(self.items) == 0:
+            self.items.append(Item(self.screen, self.size, ["./item_speed.png", "./item_bullet.png"], random.randint(0, 1)))
+
+        self.item_respawn_index += 1
         self.airplanes[0].image.set_alpha(255)
         self.airplanes[1].image.set_alpha(255)
+
+        self.spawn_index += 1
 
     def draw_game_state(self):
         self.screen.fill(self.colors['BLACK'])
@@ -148,7 +185,10 @@ class Game:
         
         for bullet in self.bullets[1]:
             bullet.show()
-        
+
+        for item in self.items:
+            item.show()
+
         font = pygame.font.Font(None, 40)
         score_p1 = font.render("SCORE : {0}".format(self.score[0]), True, self.colors['YELLOW'])
         self.screen.blit(score_p1, (820, 0))

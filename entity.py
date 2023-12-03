@@ -26,10 +26,10 @@ class Entity:
         self.screen.blit(self.image, (self.x, self.y))
 
     def crash(self, other):
-        if (self.x-other.sx <= other.x) and (other.x <= self.x+self.sx):
-            if (self.y-other.sy <= other.y) and (other.y <= self.y+self.sy):
-                return True
-            else:
-                return False
-        else : 
-            return False
+        return (
+            self.x < other.x + other.sx
+            and self.x + self.sx > other.x
+            and self.y < other.y + other.sy
+            and self.y + self.sy > other.y
+        )
+

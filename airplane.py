@@ -11,6 +11,9 @@ class Airplane(Entity):
         else:
             self.x = self.size[0]-self.sx- 70
             self.y = round(self.size[1]/2 - self.sy/2)
+
+        self.bullet_spawn_rate = 20
+
         self.up_go = False
         self.down_go = False
         self.left_go = False
