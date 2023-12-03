@@ -13,6 +13,8 @@ class Entity:
         self.change_size(50, 80)
         self.change_rotate(angle)
         self.player = player
+        self.last_crash_time = 0
+        self.stealth_time = 1000 # 1sec
 
     def change_size(self, sx, sy):
         self.image = pygame.transform.scale(self.image, (sx, sy))
@@ -26,10 +28,16 @@ class Entity:
         self.screen.blit(self.image, (self.x, self.y))
 
     def crash(self, other):
-        return (
-            self.x < other.x + other.sx
-            and self.x + self.sx > other.x
-            and self.y < other.y + other.sy
-            and self.y + self.sy > other.y
-        )
+        current_time = pygame.time.get_ticks()
+        
+        if current_time - self.last_crash_time > self.stealth_time:
+            if (self.x < other.x + other.sx
+                and self.x + self.sx > other.x
+                and self.y < other.y + other.sy
+                and self.y + self.sy > other.y):
+                self.last_crash_time = current_time
+                return True
+        return False
+
+        
 
