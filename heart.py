@@ -7,4 +7,4 @@ class Heart(Entity):
         super().__init__(screen, size, address, angle, player)
         self.address = address
         self.x, self.y = x, 0
-        self.change_size(40, 40)
+        self.change_size(50, 40)  # (은비) 크기 수정

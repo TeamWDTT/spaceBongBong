@@ -6,7 +6,7 @@ import random
 class Item(Entity):
     def __init__(self, screen, size, address_list, buff_type):
         super().__init__(screen, size, address_list[buff_type], 0, 0)
-        self.change_size(50, 50)
+        self.change_size(70, 50)  # (은비) 크기 수정
         self.buff_type = buff_type  # 0: 비행기 속도+2 , 1: 총알속도 2배
         self.address_list = address_list
         self.setPosition()
