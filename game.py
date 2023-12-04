@@ -113,7 +113,7 @@ class Game:
                     delete_heart_list.append(self.hearts[1][self.heart_index[1]])
                 self.heart_index[1] -= 1
                 if self.heart_index[1] == -1:
-                    self.game_over("PLAYER 2")
+                    self.game_over("PLAYER 1") # winner
 
         for i in range(len(self.bullets[1])): # 2P 총알이 1P 비행기에 맞았을 때
             a = self.bullets[1][i]
@@ -125,7 +125,7 @@ class Game:
                     delete_heart_list.append(self.hearts[0][self.heart_index[0]])
                 self.heart_index[0] -= 1
                 if self.heart_index[0] == -1:
-                    self.game_over("PLAYER 1")
+                    self.game_over("PLAYER 2") # winner
             
 
         for i in range(len(self.bullets[0])):  # 아이템 적중 시 파괴 - 1P
