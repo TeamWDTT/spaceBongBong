@@ -30,21 +30,29 @@ class Entity:
 
     def crash(self, other):
         current_time = pygame.time.get_ticks()
+        
+        if not self.is_stealth: 
+            if (self.x < other.x + other.sx
+                and self.x + self.sx > other.x
+                and self.y < other.y + other.sy
+                and self.y + self.sy > other.y):
+                self.is_stealth = True
+                self.last_crash_time = current_time # if crashed
+                return True
+            
+        return False
+    
+    def update_stealth(self):
+        current_time = pygame.time.get_ticks()
 
         if current_time - self.last_crash_time > self.stealth_time:
             self.is_stealth = False
         else:
             self.is_stealth = True
 
-        if self.is_stealth == False : 
-            if (self.x < other.x + other.sx
-                and self.x + self.sx > other.x
-                and self.y < other.y + other.sy
-                and self.y + self.sy > other.y):
-                self.last_crash_time = current_time # if crashed
-                return True
-            
-        return False
-
+        if self.is_stealth:
+            self.image = change_to_red(self.original_image.copy())
+        else:
+            self.image = self.original_image.copy()
         
 

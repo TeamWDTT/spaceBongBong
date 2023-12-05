@@ -78,7 +78,9 @@ class Game:
     
         self.airplanes[0].update_position()
         self.airplanes[1].update_position()
-    
+
+        self.airplanes[0].update_stealth()
+        self.airplanes[1].update_stealth()
 
         if self.airplanes[0].shooting: # 총알 생성 - 1P
             if self.spawn_index % self.airplanes[0].bullet_spawn_rate == 0:
@@ -108,7 +110,6 @@ class Game:
         for i in range(len(self.bullets[0])): # 1P 총알이 2P 비행기에 맞았을 때
             a = self.bullets[0][i]
             if self.airplanes[1].crash(a):
-                self.airplanes[1].set_stealth_mode(True)
                 delete_bullet_list.append(self.bullets[0][i]) 
                 self.score[1] += 1
                 if self.heart_index[1] >= 0:
@@ -120,7 +121,6 @@ class Game:
         for i in range(len(self.bullets[1])): # 2P 총알이 1P 비행기에 맞았을 때
             a = self.bullets[1][i]
             if self.airplanes[0].crash(a):
-                self.airplanes[0].set_stealth_mode(True)
                 delete_bullet_list.append(self.bullets[1][i])
                 self.score[0] += 1
                 if self.heart_index[0] >= 0:

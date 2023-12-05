@@ -82,13 +82,20 @@ class Airplane(Entity):
                     self.right_go = False
                 if event.key == pygame.K_RSHIFT:
                     self.shooting = False
+                    
+    def update_stealth(self):
+        current_time = pygame.time.get_ticks()
 
-    def set_stealth_mode(self, is_stealth):
-        if is_stealth:
+        if current_time - self.last_crash_time > self.stealth_time:
+            self.is_stealth = False
+        else:
+            self.is_stealth = True
+
+        if self.is_stealth:
             self.image = change_to_red(self.original_image.copy())
         else:
             self.image = self.original_image.copy()
-
+        
     def update_position(self):
         if self.player == 0:  # left_player
             if not self.check_touched:
