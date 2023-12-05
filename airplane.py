@@ -1,10 +1,22 @@
 import pygame
-
 from entity import Entity
+
+def change_to_red(image):
+    width, height = image.get_size()
+
+    for y in range(height):
+        for x in range(width):
+            current_color = image.get_at((x, y))
+            new_color = (255, 0, 0, current_color.a)
+            image.set_at((x, y), new_color)
+
+    return image
 
 class Airplane(Entity):
     def __init__(self, screen, size, address, angle, player):
         super().__init__(screen, size, address, angle, player)
+        self.original_image = self.image.copy()
+
         if self.player == 0:
             self.x = self.sx
             self.y = round(self.size[1]/2 - self.sy/2)
@@ -70,6 +82,12 @@ class Airplane(Entity):
                     self.right_go = False
                 if event.key == pygame.K_RSHIFT:
                     self.shooting = False
+
+    def set_stealth_mode(self, is_stealth):
+        if is_stealth:
+            self.image = change_to_red(self.original_image.copy())
+        else:
+            self.image = self.original_image.copy()
 
     def update_position(self):
         if self.player == 0:  # left_player
@@ -139,3 +157,5 @@ class Airplane(Entity):
                         self.has_rotated_recently = True
             else:
                 self.has_rotated_recently = False
+    
+    

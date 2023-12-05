@@ -12,7 +12,7 @@ class Game:
         pygame.init()
         self.size = [1000, 750]
         self.screen = pygame.display.set_mode(self.size)
-        self.title = "spaceBongBong"  # (은비) 이름 바꿔봤숨다..ㅎㅎ
+        self.title = "spaceBongBong" 
         pygame.display.set_caption(self.title)
         self.clock = pygame.time.Clock()
         self.colors = {
@@ -43,7 +43,9 @@ class Game:
 
     def run_game(self):
         SB = 0
-        start_image = pygame.image.load('./images/start.png')  # (은비) 시작 화면
+
+        #game start image
+        start_image = pygame.image.load('./images/start.png')  
 
         while SB == 0:
             self.clock.tick(120)
@@ -52,13 +54,7 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         SB = 1
             
-            self.screen.blit(start_image, (0, 0)) # (은비) 시작화면 출력
-
-            #self.screen.fill(self.colors['BLACK'])
-            #font = pygame.font.Font(None, 60)
-            #text = font.render("PRESS SPACE KEY TO START THE GAME", True, self.colors['WHITE'])
-            #self.screen.blit(text, (70, round(self.size[1]/2-50)))    
-            
+            self.screen.blit(start_image, (0, 0)) 
             pygame.display.flip()
 
         SB = 0
@@ -74,7 +70,7 @@ class Game:
             self.update_game_state()
             self.draw_game_state()
 
-        pygame.quit()    
+        pygame.quit()  
 
     def update_game_state(self):
         now_time = datetime.now()
@@ -112,20 +108,20 @@ class Game:
         for i in range(len(self.bullets[0])): # 1P 총알이 2P 비행기에 맞았을 때
             a = self.bullets[0][i]
             if self.airplanes[1].crash(a):
+                self.airplanes[1].set_stealth_mode(True)
                 delete_bullet_list.append(self.bullets[0][i]) 
-                self.airplanes[1].image.set_alpha(128)
                 self.score[1] += 1
                 if self.heart_index[1] >= 0:
                     delete_heart_list.append(self.hearts[1][self.heart_index[1]])
                 self.heart_index[1] -= 1
                 if self.heart_index[1] == -1:
                     self.game_over("PLAYER 1") # winner
-
+                
         for i in range(len(self.bullets[1])): # 2P 총알이 1P 비행기에 맞았을 때
             a = self.bullets[1][i]
             if self.airplanes[0].crash(a):
+                self.airplanes[0].set_stealth_mode(True)
                 delete_bullet_list.append(self.bullets[1][i])
-                self.airplanes[0].image.set_alpha(128)
                 self.score[0] += 1
                 if self.heart_index[0] >= 0:
                     delete_heart_list.append(self.hearts[0][self.heart_index[0]])
@@ -181,11 +177,11 @@ class Game:
         self.spawn_index += 1
 
     def draw_game_state(self):
-        font_path = 'PressStart2P.ttf' # (은비) 폰트 추가
-        main_background = pygame.image.load('./images/background.png')  # (은비) 게임 메인 배경화면
+        font_path = 'PressStart2P.ttf' # font
 
-        #self.screen.fill(self.colors['BLACK'])
-        self.screen.blit(main_background, (0, 0))  # (은비) 게임 메인 배경화면 출력
+        # game main image
+        main_background = pygame.image.load('./images/background.png')  
+        self.screen.blit(main_background, (0, 0))  
     
         self.airplanes[0].show()
         self.airplanes[1].show()
@@ -199,14 +195,7 @@ class Game:
         for item in self.items:
             item.show()
 
-        font = pygame.font.Font(font_path, 20)  # (은비) 폰트
-        
-        #score_p1 = font.render("SCORE : {0}".format(self.score[0]), True, self.colors['YELLOW'])
-        #self.screen.blit(score_p1, (820, 0))
-    
-        #score_p2 = font.render("SCORE : {0}".format(self.score[1]), True, self.colors['YELLOW'])
-        #self.screen.blit(score_p2, (0, 0))
-    
+        font = pygame.font.Font(font_path, 20)  
         text_time = font.render("TIME : {0}".format(self.delta_time), True, self.colors['WHITE'])
         self.screen.blit(text_time, (430, 5))
         
@@ -220,8 +209,7 @@ class Game:
         
     def game_over(self, winner):
         SB = 0
-
-        # (은비) 결과 화면
+        # game result image
         winner_player1 = pygame.image.load('./images/winPlayer1.png')
         winner_player2 = pygame.image.load('./images/winPlayer2.png')
 
@@ -232,16 +220,7 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         SB = 1
             
-            # (은비) 결과 화면 출력
             winner_image = winner_player1 if winner == "PLAYER 1" else winner_player2
             self.screen.blit(winner_image, (0,0))
-            
-            #self.screen.fill(self.colors['BLACK'])
-            #font = pygame.font.Font(None, 65)
-            #result_text = font.render("Winner : {0}".format(winner), True, self.colors['WHITE'])
-            #exit_prompt = font.render("PRESS SPACE KEY TO EXIT THE GAME", True, self.colors['WHITE'])
-            #self.screen.blit(result_text, (70, round(self.size[1]/2-50)))    
-            #self.screen.blit(exit_prompt, (70, round(self.size[1]/2-50) - 70))    
-            
             pygame.display.flip()
         pygame.quit()
