@@ -1,10 +1,22 @@
 import pygame
-
 from entity import Entity
+
+def change_to_red(image):
+    width, height = image.get_size()
+
+    for y in range(height):
+        for x in range(width):
+            current_color = image.get_at((x, y))
+            new_color = (255, 0, 0, current_color.a)
+            image.set_at((x, y), new_color)
+
+    return image
 
 class Airplane(Entity):
     def __init__(self, screen, size, address, angle, player):
         super().__init__(screen, size, address, angle, player)
+        self.original_image = self.image.copy()
+
         if self.player == 0:
             self.x = self.sx
             self.y = round(self.size[1]/2 - self.sy/2)
@@ -70,7 +82,20 @@ class Airplane(Entity):
                     self.right_go = False
                 if event.key == pygame.K_RSHIFT:
                     self.shooting = False
+                    
+    def update_stealth(self):
+        current_time = pygame.time.get_ticks()
 
+        if current_time - self.last_crash_time > self.stealth_time:
+            self.is_stealth = False
+        else:
+            self.is_stealth = True
+
+        if self.is_stealth:
+            self.image = change_to_red(self.original_image.copy())
+        else:
+            self.image = self.original_image.copy()
+        
     def update_position(self):
         if self.player == 0:  # left_player
             if not self.check_touched:
@@ -104,6 +129,8 @@ class Airplane(Entity):
                         self.change_rotate(270)
                         self.rotate = 270
                         self.has_rotated_recently = True
+                    
+                    self.original_image = self.image.copy()
             else:
                 self.has_rotated_recently = False
 
@@ -127,15 +154,21 @@ class Airplane(Entity):
 
             # if airplane meet right top
             if (self.y == 40) and (self.x >= self.size[0]-self.sx- 70):
+                print("touched")
                 if not self.has_rotated_recently:
                     self.check_touched = not self.check_touched
                     if self.rotate == 90:
                         self.change_rotate(90)
                         self.rotate = 180
+                        print("changed angle")
                         self.has_rotated_recently = True
                     else :
                         self.change_rotate(270)
                         self.rotate = 90
+                        print("changed angle")
                         self.has_rotated_recently = True
+                    
+                    self.original_image = self.image.copy()
             else:
                 self.has_rotated_recently = False
+    

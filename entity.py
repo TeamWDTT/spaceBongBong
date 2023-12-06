@@ -15,6 +15,7 @@ class Entity:
         self.player = player
         self.last_crash_time = 0
         self.stealth_time = 1000 # 1sec
+        self.is_stealth = False
 
     def change_size(self, sx, sy):
         self.image = pygame.transform.scale(self.image, (sx, sy))
@@ -30,14 +31,24 @@ class Entity:
     def crash(self, other):
         current_time = pygame.time.get_ticks()
         
-        if current_time - self.last_crash_time > self.stealth_time:
+        if not self.is_stealth: 
             if (self.x < other.x + other.sx
                 and self.x + self.sx > other.x
                 and self.y < other.y + other.sy
                 and self.y + self.sy > other.y):
-                self.last_crash_time = current_time
+                self.is_stealth = True
+                self.last_crash_time = current_time # if crashed
                 return True
+            
         return False
+    
+    def update_stealth(self):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.last_crash_time > self.stealth_time:
+            self.is_stealth = False
+        else:
+            self.is_stealth = True
 
         
 

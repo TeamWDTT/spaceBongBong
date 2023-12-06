@@ -6,7 +6,7 @@ class Bullet(Entity):
         self.move = 5
         self.x = airplane.x + airplane.sx/2
         self.y = airplane.y + airplane.sy/4
-        self.change_size(25, 15)  # (은비) 크기 수정
+        self.change_size(25, 15) 
         self.rotate = angle
         self.airplane = airplane
         self.direction = None  
