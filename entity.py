@@ -50,9 +50,5 @@ class Entity:
         else:
             self.is_stealth = True
 
-        if self.is_stealth:
-            self.image = change_to_red(self.original_image.copy())
-        else:
-            self.image = self.original_image.copy()
         
 

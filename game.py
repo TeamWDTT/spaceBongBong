@@ -75,12 +75,12 @@ class Game:
     def update_game_state(self):
         now_time = datetime.now()
         self.delta_time = round((now_time - self.start_time).total_seconds())
-    
-        self.airplanes[0].update_position()
-        self.airplanes[1].update_position()
 
         self.airplanes[0].update_stealth()
         self.airplanes[1].update_stealth()
+
+        self.airplanes[0].update_position()
+        self.airplanes[1].update_position()
 
         if self.airplanes[0].shooting: # 총알 생성 - 1P
             if self.spawn_index % self.airplanes[0].bullet_spawn_rate == 0:

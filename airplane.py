@@ -129,6 +129,8 @@ class Airplane(Entity):
                         self.change_rotate(270)
                         self.rotate = 270
                         self.has_rotated_recently = True
+                    
+                    self.original_image = self.image.copy()
             else:
                 self.has_rotated_recently = False
 
@@ -152,17 +154,21 @@ class Airplane(Entity):
 
             # if airplane meet right top
             if (self.y == 40) and (self.x >= self.size[0]-self.sx- 70):
+                print("touched")
                 if not self.has_rotated_recently:
                     self.check_touched = not self.check_touched
                     if self.rotate == 90:
                         self.change_rotate(90)
                         self.rotate = 180
+                        print("changed angle")
                         self.has_rotated_recently = True
                     else :
                         self.change_rotate(270)
                         self.rotate = 90
+                        print("changed angle")
                         self.has_rotated_recently = True
+                    
+                    self.original_image = self.image.copy()
             else:
                 self.has_rotated_recently = False
-    
     
